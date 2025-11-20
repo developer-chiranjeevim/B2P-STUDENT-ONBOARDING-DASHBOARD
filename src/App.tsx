@@ -1,11 +1,8 @@
-import { useState, useEffect } from 'react';
-import { UserCircle, Mail, Phone, GraduationCap, Users, BookOpen, CheckCircle2, ArrowRight, ArrowLeft, Sparkles, Copy, Check, KeyRound, PartyPopper, X, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { UserCircle, Mail, GraduationCap, Users, BookOpen, CheckCircle2, ArrowRight, ArrowLeft, Copy, Check, KeyRound, PartyPopper, X, AlertCircle } from 'lucide-react';
 import { handleFormSubmit } from "./apis/handleFormSubmit";
 
 
-interface StudentOnboardingProps {
-  onNavigate: (view: string) => void;
-}
 
 interface FormData {
   firstName: string;
@@ -64,7 +61,7 @@ const validateDateOfBirth = (dob: string): boolean => {
   return age >= 5 && age <= 25; // Assuming students are between 5-25 years old
 };
 
-export default function App({ onNavigate }: StudentOnboardingProps) {
+export default function App() {
   const [currentStep, setCurrentStep] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [generatedPassword, setGeneratedPassword] = useState<string>('');
@@ -240,9 +237,6 @@ export default function App({ onNavigate }: StudentOnboardingProps) {
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
-    setTimeout(() => {
-      onNavigate('student-dashboard');
-    }, 300);
   };
 
   const SelectComponent = ({ 
