@@ -22,9 +22,17 @@ interface FormData {
 const handleFormSubmit = async(datas: FormData) => {
     try{
 
-        const response = await axios.post(`${import.meta.env.VITE_APP_B2P_AUTH_APIS}/create-student-user`, {
-            datas
-        });
+        const response = await axios.post(
+            `${import.meta.env.VITE_APP_B2P_AUTH_APIS}/create-student-user`, 
+            // Data (the body of the request) is the second argument
+            datas, 
+            // Configuration object (including headers) is the third argument
+            { 
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
         return {status: true, statusCode: response.status}
 
 
