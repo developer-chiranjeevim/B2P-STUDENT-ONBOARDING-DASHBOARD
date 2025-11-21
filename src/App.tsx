@@ -207,8 +207,10 @@ export default function App() {
       const newPassword = generatePassword();
       setGeneratedPassword(newPassword);
       let finalData = { ...formData, password: newPassword };
-      setFormData(finalData);
+      console.log(finalData);
+      // setFormData(finalData);
       const response = await handleFormSubmit(finalData);
+      console.log(response);
       if (response?.status) {
         setShowSuccessModal(true);
       } else if (!response?.status && response?.statusCode === 409) {
