@@ -5,21 +5,7 @@ import { fetchRazorpayKey, loadRazorpayScript, createOrder, verifyPayment  } fro
 
 
 
-interface PaymentVerificationResult {
-  success: boolean;
-  message: string;
-  orderId?: string;
-  paymentId?: string;
-}
 
-
-
-interface RazorpayOrder {
-  id: string;
-  amount: number;
-  currency: string;
-  receipt?: string;
-}
 
 interface RazorpayResponse {
   razorpay_order_id: string;
