@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { UserCircle, Mail, GraduationCap, Users, BookOpen, CheckCircle2, ArrowRight, ArrowLeft, Copy, Check, KeyRound, PartyPopper, X, AlertCircle, IndianRupee } from 'lucide-react';
 import { handleFormSubmit } from "./apis/handleFormSubmit";
-import { fetchRazorpayKey, loadRazorpayScript, createOrder, verifyPayment  } from "./apis/handlePayments";
+import { fetchRazorpayKey, loadRazorpayScript, createOrder, verifyPayment  } from "./apis/HandlePayments";
 
 
 
@@ -126,7 +126,7 @@ export default function App() {
   const [onLoad, setOnload] = useState<boolean>(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [paymentCompleted, setPaymentCompleted] = useState<boolean>(false);
+
   
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
@@ -248,115 +248,105 @@ export default function App() {
   };
 
 const handleSubmit = async() => {
-    // Validate all steps before submission
-    let isValid = true;
-    for (let i = 0; i < steps.length; i++) {
-      if (!validateStep(i)) {
-        setCurrentStep(i);
-        isValid = false;
-        break;
-      }
+  // Validate all steps before submission
+  let isValid = true;
+  for (let i = 0; i < steps.length; i++) {
+    if (!validateStep(i)) {
+      setCurrentStep(i);
+      isValid = false;
+      break;
     }
-    
-    if (!isValid) return;
-    
-    setOnload(true);
-    try {
-      const newPassword = generatePassword();
-      setGeneratedPassword(newPassword);
-      let finalData = { ...formData, password: newPassword };
-      console.log(finalData);
-      
-      // Only process payment if not already completed
-      if (!paymentCompleted) {
-        const razorPayKey = await fetchRazorpayKey();
-        const scriptLoaded: boolean = await loadRazorpayScript();
-        if(!scriptLoaded){
-          alert("Error Loading RazorPay Script");
-          setOnload(false);
-          return;
-        }
-        
-        if(razorPayKey){
-          const order: RazorpayOrder = await createOrder();
-          
-          const options: RazorpayOptions = {
-            key: razorPayKey,
-            amount: order.amount,
-            currency: order.currency,
-            name: 'B2P TEACHERS',
-            description: '100 Days Payment Plan',
-            order_id: order.id,
-            handler: async function (response: RazorpayResponse): Promise<void> {
-              // Verify payment on backend
-              const verificationResult: PaymentVerificationResult =
-                await verifyPayment({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                });
+  }
+  
+  if (!isValid) return;
 
-              if(verificationResult){
-                console.log("payment Success");
-                setPaymentCompleted(true); // Mark payment as completed
-                
-                // Submit form after successful payment
-                const submitResponse = await handleFormSubmit(finalData);
-                console.log(submitResponse);
-                
-                if (submitResponse?.status) {
-                  setShowSuccessModal(true);
-                } else if (!submitResponse?.status && submitResponse?.statusCode === 409) {
-                  setErrors(prev => ({ ...prev, email: 'This email is already registered' }));
-                  setCurrentStep(1); // Go back to email step
-                }
-                setOnload(false);
-              }
-            },
-            prefill: {
-              name: "chiranjeevi",
-              email:  "test@b2p.com",
-              contact:  "1234566778909",
-            },
-            theme: {
-              color: '#3b82f6',
-            },
-            modal: {
-              ondismiss: function (): void {
-                console.log({
-                  success: false,
-                  message: 'Payment cancelled by user',
-                });
-                setOnload(false);
-              },
-            },
-          };
+  // Calculate amount directly without setState
+  let calculatedAmount = null;
+  switch(formData.course){
+    case "Moral Ethics - 48 Days - 4999 Rs":
+      calculatedAmount = 4999;
+      break;
+    case "NEET/JEE FOUNDATION - 10 Months - 1499 Rs / per month":
+      calculatedAmount = 1499;
+      break;
+    case "NEET/JEE 10 Months - 1999 Rs / per month":
+      calculatedAmount = 1999;
+      break;
+    case "NEET/JEE - Crash Course(For 12 Completed Students) - 10 Months - 1999 Rs / per month":
+      calculatedAmount = 1999;
+      break;
+    default:
+      alert("Please select a valid course");
+      return;
+  }
+  
+  setOnload(true);
+  try {
+    const newPassword = generatePassword();
+    setGeneratedPassword(newPassword);
+    let finalData = { ...formData, password: newPassword };
     
-          const razorpay = new window.Razorpay(options);
-          razorpay.open();
-          return; // Exit early since form submission happens in handler
-        }
-      } else {
-        // Payment already completed, directly submit form
-        const response = await handleFormSubmit(finalData);
-        console.log(response);
-        
-        if (response?.status) {
-          setShowSuccessModal(true);
-          setPaymentCompleted(false); // Reset for next user
-        } else if (!response?.status && response?.statusCode === 409) {
-          setErrors(prev => ({ ...prev, email: 'This email is already registered' }));
-          setCurrentStep(1); // Go back to email step
-        }
-      }
-      
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      // Handle error state if needed
-    } finally {
+    const razorPayKey = await fetchRazorpayKey();
+    const scriptLoaded = await loadRazorpayScript();
+    
+    if(!scriptLoaded){
+      alert("Error Loading RazorPay Script");
       setOnload(false);
+      return;
     }
-  };
+    
+    if(razorPayKey && calculatedAmount !== null){
+      const order = await createOrder(calculatedAmount);
+      
+      const options = {
+        key: razorPayKey,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'B2P TEACHERS',
+        description: '100 Days Payment Plan',
+        order_id: order.id,
+        handler: async function (response: RazorpayResponse) {
+          const verificationResult = await verifyPayment({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          });
+
+          if(verificationResult){
+            const submitResponse = await handleFormSubmit(finalData);
+            
+            if (submitResponse?.status) {
+              setShowSuccessModal(true);
+            } else if (submitResponse?.statusCode === 409) {
+              setErrors(prev => ({ ...prev, email: 'This email is already registered' }));
+              setCurrentStep(1);
+            }
+            setOnload(false);
+          }
+        },
+        prefill: {
+          name: formData.firstName || "",
+          email: formData.email || "",
+          contact: formData.phone || "",
+        },
+        theme: {
+          color: '#3b82f6',
+        },
+        modal: {
+          ondismiss: function () {
+            setOnload(false);
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    }
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    setOnload(false);
+  }
+};
 
   const handleCopyEmail = async () => {
     await navigator.clipboard.writeText(formData.email);
@@ -997,14 +987,16 @@ const handleSubmit = async() => {
                   onClick={handleSubmit}
                   className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all transform hover:scale-105 active:scale-95"
                 >
-                  <CheckCircle2 className="w-4 h-4" />
                   {
                     onLoad?
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 animate-spin">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 animate-spin mx-auto">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                     </svg>
                     :
-                    "Complete Registration"
+                    <div className="flex items-center gap-[1rem]">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <h1 className="">Complete Registration</h1>
+                    </div>
 
 
                   }

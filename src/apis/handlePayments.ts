@@ -42,13 +42,13 @@ const loadRazorpayScript = (): Promise<boolean> => {
     });
 };
 
-const createOrder = async (): Promise<RazorpayOrder> => {
+const createOrder = async (amount: number): Promise<RazorpayOrder> => {
     try {
       const response = await fetch(`${API_URL}/make-payment `, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: 1,
+          amount: amount,
           currency: 'INR',
           receipt: `receipt_${Date.now()}`,
           notes: {
