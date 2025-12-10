@@ -1,7 +1,76 @@
 import { useState } from 'react';
-import { UserCircle, Mail, GraduationCap, Users, BookOpen, CheckCircle2, ArrowRight, ArrowLeft, Copy, Check, KeyRound, PartyPopper, X, AlertCircle } from 'lucide-react';
+import { UserCircle, Mail, GraduationCap, Users, BookOpen, CheckCircle2, ArrowRight, ArrowLeft, Copy, Check, KeyRound, PartyPopper, X, AlertCircle, IndianRupee } from 'lucide-react';
 import { handleFormSubmit } from "./apis/handleFormSubmit";
+import { fetchRazorpayKey, loadRazorpayScript, createOrder, verifyPayment  } from "./apis/HandlePayments";
 
+interface PaymentData {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+interface PaymentVerificationResult {
+  success: boolean;
+  message: string;
+  orderId?: string;
+  paymentId?: string;
+}
+
+interface CustomerInfo {
+  name: string;
+  email: string;
+  contact: string;
+}
+
+interface PaymentStatus {
+  success: boolean;
+  message: string;
+  orderId?: string;
+  paymentId?: string;
+}
+
+interface RazorpayOrder {
+  id: string;
+  amount: number;
+  currency: string;
+  receipt?: string;
+}
+
+interface RazorpayResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => Promise<void>;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  theme: {
+    color: string;
+  };
+  modal: {
+    ondismiss: () => void;
+  };
+}
+
+// Extend Window interface
+declare global {
+  interface Window {
+    Razorpay: new (options: RazorpayOptions) => {
+      open: () => void;
+    };
+  }
+}
 
 
 interface FormData {
@@ -22,6 +91,7 @@ interface FormData {
   hobbies: string;
   goals: string;
   password: string;
+  course: string;
 }
 
 interface FormErrors {
@@ -71,6 +141,7 @@ export default function App() {
   const [onLoad, setOnload] = useState<boolean>(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [paymentCompleted, setPaymentCompleted] = useState<boolean>(false);
   
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
@@ -89,7 +160,8 @@ export default function App() {
     subjects: [],
     hobbies: '',
     goals: '',
-    password: ''
+    password: '',
+    course: ''
   });
 
   const steps = [
@@ -97,7 +169,8 @@ export default function App() {
     { title: 'Contact Details', icon: Mail },
     { title: 'Academic Info', icon: GraduationCap },
     { title: 'Parent/Guardian', icon: Users },
-    { title: 'Interests & Goals', icon: BookOpen }
+    { title: 'Interests & Goals', icon: BookOpen },
+    { title: 'Payments', icon: IndianRupee }
   ];
 
   const progress = ((currentStep + 1) / steps.length) * 100;
@@ -189,7 +262,7 @@ export default function App() {
     }
   };
 
-  const handleSubmit = async() => {
+const handleSubmit = async() => {
     // Validate all steps before submission
     let isValid = true;
     for (let i = 0; i < steps.length; i++) {
@@ -208,15 +281,90 @@ export default function App() {
       setGeneratedPassword(newPassword);
       let finalData = { ...formData, password: newPassword };
       console.log(finalData);
-      // setFormData(finalData);
-      const response = await handleFormSubmit(finalData);
-      console.log(response);
-      if (response?.status) {
-        setShowSuccessModal(true);
-      } else if (!response?.status && response?.statusCode === 409) {
-        setErrors(prev => ({ ...prev, email: 'This email is already registered' }));
-        setCurrentStep(1); // Go back to email step
+      
+      // Only process payment if not already completed
+      if (!paymentCompleted) {
+        const razorPayKey = await fetchRazorpayKey();
+        const scriptLoaded: boolean = await loadRazorpayScript();
+        if(!scriptLoaded){
+          alert("Error Loading RazorPay Script");
+          setOnload(false);
+          return;
+        }
+        
+        if(razorPayKey){
+          const order: RazorpayOrder = await createOrder();
+          
+          const options: RazorpayOptions = {
+            key: razorPayKey,
+            amount: order.amount,
+            currency: order.currency,
+            name: 'B2P TEACHERS',
+            description: '100 Days Payment Plan',
+            order_id: order.id,
+            handler: async function (response: RazorpayResponse): Promise<void> {
+              // Verify payment on backend
+              const verificationResult: PaymentVerificationResult =
+                await verifyPayment({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                });
+
+              if(verificationResult){
+                console.log("payment Success");
+                setPaymentCompleted(true); // Mark payment as completed
+                
+                // Submit form after successful payment
+                const submitResponse = await handleFormSubmit(finalData);
+                console.log(submitResponse);
+                
+                if (submitResponse?.status) {
+                  setShowSuccessModal(true);
+                } else if (!submitResponse?.status && submitResponse?.statusCode === 409) {
+                  setErrors(prev => ({ ...prev, email: 'This email is already registered' }));
+                  setCurrentStep(1); // Go back to email step
+                }
+                setOnload(false);
+              }
+            },
+            prefill: {
+              name: "chiranjeevi",
+              email:  "test@b2p.com",
+              contact:  "1234566778909",
+            },
+            theme: {
+              color: '#3b82f6',
+            },
+            modal: {
+              ondismiss: function (): void {
+                console.log({
+                  success: false,
+                  message: 'Payment cancelled by user',
+                });
+                setOnload(false);
+              },
+            },
+          };
+    
+          const razorpay = new window.Razorpay(options);
+          razorpay.open();
+          return; // Exit early since form submission happens in handler
+        }
+      } else {
+        // Payment already completed, directly submit form
+        const response = await handleFormSubmit(finalData);
+        console.log(response);
+        
+        if (response?.status) {
+          setShowSuccessModal(true);
+          setPaymentCompleted(false); // Reset for next user
+        } else if (!response?.status && response?.statusCode === 409) {
+          setErrors(prev => ({ ...prev, email: 'This email is already registered' }));
+          setCurrentStep(1); // Go back to email step
+        }
       }
+      
     } catch (error) {
       console.error('Error submitting form:', error);
       // Handle error state if needed
@@ -738,6 +886,42 @@ export default function App() {
             </div>
           </div>
         );
+      
+        case 5:
+          return(
+            <div 
+            key="step4"
+            className="space-y-6 animate-in fade-in slide-in-from-right-5 duration-300"
+            >
+              <div className="text-center mb-8">
+                <div className="inline-block animate-in zoom-in duration-500 delay-200">
+                  <IndianRupee className="w-16 h-16 mx-auto mb-4 text-blue-400" />
+                </div>
+                <h2 className="text-3xl font-bold text-blue-600 mb-2">Select Your Plan</h2>
+                <p className="text-gray-600">Select Your Plan and Subscribe</p>
+              </div>
+              <div className="space-y-6">
+                <div className="animate-in fade-in slide-in-from-bottom-3 duration-300 delay-200">
+                <label htmlFor="course" className="block text-sm font-medium text-gray-700">
+                  Choose Course
+                </label>
+                <SelectComponent
+                  id="course"
+                  value={formData.course}
+                  onChange={(value) => updateFormData('course', value)}
+                  placeholder="Select Course"
+                  options={[
+                    { value: 'Moral Ethics - 48 Days - 4999 Rs', label: 'Moral Ethics - 48 Days - 4999 Rs' },
+                    { value: 'NEET/JEE FOUNDATION - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION - 10 Months - 1499 Rs / per month' },
+                    {value: 'NEET/JEE 10 Months - 1999 Rs / per month', label: 'NEET/JEE 10 Months - 1999 Rs / per month' },
+                    {value: 'NEET/JEE - Crash Course(For 12 Completed Students) - 10 Months - 1999 Rs / per month', label: 'NEET/JEE - Crash Course(For 12 Completed Students) - 10 Months - 1999 Rs / per month' },
+                    
+                  ]}
+                />
+              </div>
+              </div>
+            </div>
+          )
 
       default:
         return null;
