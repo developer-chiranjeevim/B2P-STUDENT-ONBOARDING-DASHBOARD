@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { UserCircle, Mail, GraduationCap, Users, BookOpen, CheckCircle2, ArrowRight, ArrowLeft, Copy, Check, KeyRound, PartyPopper, X, AlertCircle, IndianRupee } from 'lucide-react';
 import { handleFormSubmit } from "./apis/handleFormSubmit";
-import { fetchRazorpayKey, loadRazorpayScript, createOrder, verifyPayment  } from "./apis/HandlePayments";
+import { fetchRazorpayKey, loadRazorpayScript, createOrder, verifyPayment  } from "./apis/handlePayments";
 
-interface PaymentData {
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-  razorpay_signature: string;
-}
+
 
 interface PaymentVerificationResult {
   success: boolean;
@@ -16,18 +12,7 @@ interface PaymentVerificationResult {
   paymentId?: string;
 }
 
-interface CustomerInfo {
-  name: string;
-  email: string;
-  contact: string;
-}
 
-interface PaymentStatus {
-  success: boolean;
-  message: string;
-  orderId?: string;
-  paymentId?: string;
-}
 
 interface RazorpayOrder {
   id: string;
