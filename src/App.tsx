@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { UserCircle, Mail, GraduationCap, Users, BookOpen, CheckCircle2, ArrowRight, ArrowLeft, Copy, Check, KeyRound, PartyPopper, X, AlertCircle, IndianRupee } from 'lucide-react';
 import { handleFormSubmit } from "./apis/handleFormSubmit";
-import { fetchRazorpayKey, loadRazorpayScript, createOrder, verifyPayment  } from "./apis/HandlePayments";
+import { fetchRazorpayKey, loadRazorpayScript, createOrder, verifyPayment  } from "./apis/handlePayments";
 
 
 
