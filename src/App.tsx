@@ -252,14 +252,29 @@ const handleSubmit = async() => {
     case "Moral Ethics - 48 Days - 4999 Rs":
       calculatedAmount = 4999;
       break;
-    case "NEET/JEE FOUNDATION - 10 Months - 1499 Rs / per month":
+    case "NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month":
       calculatedAmount = 1499;
       break;
-    case "NEET/JEE 10 Months - 1999 Rs / per month":
+    case "NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month":
+      calculatedAmount = 1499;
+      break;
+    case "NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month":
+      calculatedAmount = 1499;
+      break;
+    case "NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month":
+      calculatedAmount = 1499;
+      break;
+    case "NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month":
+      calculatedAmount = 1499;
+      break;
+    case "NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month":
       calculatedAmount = 1999;
       break;
-    case "NEET/JEE - Crash Course(For 12 Completed Students) - 10 Months - 1999 Rs / per month":
+    case "NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month":
       calculatedAmount = 1999;
+      break;
+    case "NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs":
+      calculatedAmount = 9999;
       break;
     default:
       alert("Please select a valid course");
@@ -873,9 +888,14 @@ const handleSubmit = async() => {
                   placeholder="Select Course"
                   options={[
                     { value: 'Moral Ethics - 48 Days - 4999 Rs', label: 'Moral Ethics - 48 Days - 4999 Rs' },
-                    { value: 'NEET/JEE FOUNDATION - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION - 10 Months - 1499 Rs / per month' },
-                    {value: 'NEET/JEE 10 Months - 1999 Rs / per month', label: 'NEET/JEE 10 Months - 1999 Rs / per month' },
-                    {value: 'NEET/JEE - Crash Course(For 12 Completed Students) - 10 Months - 1999 Rs / per month', label: 'NEET/JEE - Crash Course(For 12 Completed Students) - 10 Months - 1999 Rs / per month' },
+                    { value: 'NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month' },
+                    { value: 'NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month' },
+                    { value: 'NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month' },
+                    { value: 'NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month' },
+                    { value: 'NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month' },
+                    { value: 'NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month', label: 'NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month' },
+                    {value: 'NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month', label: 'NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month' },
+                    {value: 'NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs', label: 'NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs' },
                     
                   ]}
                 />
