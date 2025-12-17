@@ -233,121 +233,163 @@ export default function App() {
     }
   };
 
-const handleSubmit = async() => {
-  // Validate all steps before submission
-  let isValid = true;
-  for (let i = 0; i < steps.length; i++) {
-    if (!validateStep(i)) {
-      setCurrentStep(i);
-      isValid = false;
-      break;
-    }
-  }
-  
-  if (!isValid) return;
+  console.log(formData.course);
 
-  // Calculate amount directly without setState
-  let calculatedAmount = null;
-  switch(formData.course){
-    case "Moral Ethics - 48 Days - 4999 Rs":
-      calculatedAmount = 4999;
-      break;
-    case "NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month":
-      calculatedAmount = 1499;
-      break;
-    case "NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month":
-      calculatedAmount = 1499;
-      break;
-    case "NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month":
-      calculatedAmount = 1499;
-      break;
-    case "NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month":
-      calculatedAmount = 1499;
-      break;
-    case "NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month":
-      calculatedAmount = 1499;
-      break;
-    case "NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month":
-      calculatedAmount = 1999;
-      break;
-    case "NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month":
-      calculatedAmount = 1999;
-      break;
-    case "NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs":
-      calculatedAmount = 9999;
-      break;
-    default:
-      alert("Please select a valid course");
-      return;
-  }
-  
-  setOnload(true);
-  try {
-    const newPassword = generatePassword();
-    setGeneratedPassword(newPassword);
-    let finalData = { ...formData, password: newPassword };
-    
-    const razorPayKey = await fetchRazorpayKey();
-    const scriptLoaded = await loadRazorpayScript();
-    
-    if(!scriptLoaded){
-      alert("Error Loading RazorPay Script");
-      setOnload(false);
-      return;
+  const handleSubmit = async() => {
+    // Validate all steps before submission
+    let isValid = true;
+    for (let i = 0; i < steps.length; i++) {
+      if (!validateStep(i)) {
+        setCurrentStep(i);
+        isValid = false;
+        break;
+      }
     }
     
-    if(razorPayKey && calculatedAmount !== null){
-      const order = await createOrder(calculatedAmount);
+    if (!isValid) return;
+
+    // Calculate amount directly without setState
+    let calculatedAmount = null;
+
+    switch (formData.course) {
+      // Existing Courses
+      case "Moral Ethics - 48 Days - 4999 Rs":
+        calculatedAmount = 4999;
+        break;
+      case "NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month":
+      case "NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month":
+      case "NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month":
+      case "NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month":
+      case "NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month":
+        calculatedAmount = 1499;
+        break;
+      case "NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month":
+      case "NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month":
+        calculatedAmount = 1999;
+        break;
+      case "NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs":
+        calculatedAmount = 9999;
+        break;
+
+      // New Courses - Grade 3 (Note the " / per month" at the end)
+      case "Grade 3 - English - 10 Months - 750 Rs / per month":
+      case "Grade 3 - Maths - 10 Months - 750 Rs / per month":
+      case "Grade 3 - Science - 10 Months - 750 Rs / per month":
+      case "Grade 3 - Hindi - 10 Months - 750 Rs / per month":
+      case "Grade 3 - Tamil - 10 Months - 750 Rs / per month":
+        calculatedAmount = 750;
+        break;
+
+      // Grade 4 & 5
+      case "Grade 4 & 5 - English - 10 Months - 900 Rs / per month":
+      case "Grade 4 & 5 - Maths - 10 Months - 900 Rs / per month":
+      case "Grade 4 & 5 - Science - 10 Months - 900 Rs / per month":
+      case "Grade 4 & 5 - Hindi - 10 Months - 900 Rs / per month":
+      case "Grade 4 & 5 - Tamil - 10 Months - 900 Rs / per month":
+        calculatedAmount = 900;
+        break;
+
+      // Grade 6 to 8
+      case "Grade 6 to 8 - English - 10 Months - 1100 Rs / per month":
+      case "Grade 6 to 8 - Maths - 10 Months - 1100 Rs / per month":
+      case "Grade 6 to 8 - Science - 10 Months - 1100 Rs / per month":
+      case "Grade 6 to 8 - Hindi - 10 Months - 1100 Rs / per month":
+      case "Grade 6 to 8 - Tamil - 10 Months - 1100 Rs / per month":
+        calculatedAmount = 1100;
+        break;
+
+      // Grade 9 & 10
+      case "Grade 9 & 10 - English - 10 Months - 1500 Rs / per month":
+      case "Grade 9 & 10 - Maths - 10 Months - 1500 Rs / per month":
+      case "Grade 9 & 10 - Science - 10 Months - 1500 Rs / per month":
+      case "Grade 9 & 10 - Hindi - 10 Months - 1500 Rs / per month":
+      case "Grade 9 & 10 - Tamil - 10 Months - 1500 Rs / per month":
+        calculatedAmount = 1500;
+        break;
+
+      // Grade 11 & 12
+      case "Grade 11 & 12 - Maths - 10 Months - 2000 Rs / per month":
+      case "Grade 11 & 12 - Physics - 10 Months - 2000 Rs / per month":
+      case "Grade 11 & 12 - Chemistry - 10 Months - 2000 Rs / per month":
+      case "Grade 11 & 12 - Biology - 10 Months - 2000 Rs / per month":
+      case "Grade 11 & 12 - Computer Science - 10 Months - 2000 Rs / per month":
+      case "Grade 11 & 12 - Accountancy - 10 Months - 2000 Rs / per month":
+      case "Grade 11 & 12 - Commerce - 10 Months - 2000 Rs / per month":
+        calculatedAmount = 2000;
+        break;
+
+      default:
+        alert("Please select a valid course");
+        return;
+    }
+    
+    setOnload(true);
+    try {
+      const newPassword = generatePassword();
+      setGeneratedPassword(newPassword);
+      let finalData = { ...formData, password: newPassword };
       
-      const options = {
-        key: razorPayKey,
-        amount: order.amount,
-        currency: order.currency,
-        name: 'B2P TEACHERS',
-        description: '100 Days Payment Plan',
-        order_id: order.id,
-        handler: async function (response: RazorpayResponse) {
-          const verificationResult = await verifyPayment({
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-          });
+      const razorPayKey = await fetchRazorpayKey();
+      const scriptLoaded = await loadRazorpayScript();
+      
+      if(!scriptLoaded){
+        alert("Error Loading RazorPay Script");
+        setOnload(false);
+        return;
+      }
+      
+      if(razorPayKey && calculatedAmount !== null){
+        const order = await createOrder(calculatedAmount);
+        
+        const options = {
+          key: razorPayKey,
+          amount: order.amount,
+          currency: order.currency,
+          name: 'B2P TEACHERS',
+          description: '100 Days Payment Plan',
+          order_id: order.id,
+          handler: async function (response: RazorpayResponse) {
+            const verificationResult = await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
 
-          if(verificationResult){
-            const submitResponse = await handleFormSubmit(finalData);
-            
-            if (submitResponse?.status) {
-              setShowSuccessModal(true);
-            } else if (submitResponse?.statusCode === 409) {
-              setErrors(prev => ({ ...prev, email: 'This email is already registered' }));
-              setCurrentStep(1);
+            if(verificationResult){
+              const submitResponse = await handleFormSubmit(finalData);
+              
+              if (submitResponse?.status) {
+                setShowSuccessModal(true);
+              } else if (submitResponse?.statusCode === 409) {
+                setErrors(prev => ({ ...prev, email: 'This email is already registered' }));
+                setCurrentStep(1);
+              }
+              setOnload(false);
             }
-            setOnload(false);
-          }
-        },
-        prefill: {
-          name: formData.firstName || "",
-          email: formData.email || "",
-          contact: formData.phone || "",
-        },
-        theme: {
-          color: '#3b82f6',
-        },
-        modal: {
-          ondismiss: function () {
-            setOnload(false);
           },
-        },
-      };
+          prefill: {
+            name: formData.firstName || "",
+            email: formData.email || "",
+            contact: formData.phone || "",
+          },
+          theme: {
+            color: '#3b82f6',
+          },
+          modal: {
+            ondismiss: function () {
+              setOnload(false);
+            },
+          },
+        };
 
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setOnload(false);
     }
-  } catch (error) {
-    console.error('Error submitting form:', error);
-    setOnload(false);
-  }
-};
+  };
 
   const handleCopyEmail = async () => {
     await navigator.clipboard.writeText(formData.email);
@@ -887,17 +929,54 @@ const handleSubmit = async() => {
                   onChange={(value) => updateFormData('course', value)}
                   placeholder="Select Course"
                   options={[
-                    { value: 'Moral Ethics - 48 Days - 4999 Rs', label: 'Moral Ethics - 48 Days - 4999 Rs' },
-                    { value: 'NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month' },
-                    { value: 'NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month' },
-                    { value: 'NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month' },
-                    { value: 'NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month' },
-                    { value: 'NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month' },
-                    { value: 'NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month', label: 'NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month' },
-                    {value: 'NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month', label: 'NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month' },
-                    {value: 'NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs', label: 'NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs' },
-                    
-                  ]}
+                      // Existing Courses
+                      { value: 'Moral Ethics - 48 Days - 4999 Rs', label: 'Moral Ethics - 48 Days - 4999 Rs' },
+                      { value: 'NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month' },
+                      { value: 'NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month' },
+                      { value: 'NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month' },
+                      { value: 'NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month' },
+                      { value: 'NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month', label: 'NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month' },
+                      { value: 'NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month', label: 'NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month' },
+                      { value: 'NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month', label: 'NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month' },
+                      { value: 'NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs', label: 'NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs' },
+
+                      // New Courses - Grade 3
+                      { value: 'Grade 3 - English - 10 Months - 750 Rs / per month', label: 'Grade 3 - English - 10 Months - 750 Rs / per month' },
+                      { value: 'Grade 3 - Maths - 10 Months - 750 Rs / per month', label: 'Grade 3 - Maths - 10 Months - 750 Rs / per month' },
+                      { value: 'Grade 3 - Science - 10 Months - 750 Rs / per month', label: 'Grade 3 - Science - 10 Months - 750 Rs / per month' },
+                      { value: 'Grade 3 - Hindi - 10 Months - 750 Rs / per month', label: 'Grade 3 - Hindi - 10 Months - 750 Rs / per month' },
+                      { value: 'Grade 3 - Tamil - 10 Months - 750 Rs / per month', label: 'Grade 3 - Tamil - 10 Months - 750 Rs / per month' },
+
+                      // New Courses - Grade 4 & 5
+                      { value: 'Grade 4 & 5 - English - 10 Months - 900 Rs / per month', label: 'Grade 4 & 5 - English - 10 Months - 900 Rs / per month' },
+                      { value: 'Grade 4 & 5 - Maths - 10 Months - 900 Rs / per month', label: 'Grade 4 & 5 - Maths - 10 Months - 900 Rs / per month' },
+                      { value: 'Grade 4 & 5 - Science - 10 Months - 900 Rs / per month', label: 'Grade 4 & 5 - Science - 10 Months - 900 Rs / per month' },
+                      { value: 'Grade 4 & 5 - Hindi - 10 Months - 900 Rs / per month', label: 'Grade 4 & 5 - Hindi - 10 Months - 900 Rs / per month' },
+                      { value: 'Grade 4 & 5 - Tamil - 10 Months - 900 Rs / per month', label: 'Grade 4 & 5 - Tamil - 10 Months - 900 Rs / per month' },
+
+                      // New Courses - Grade 6 to 8
+                      { value: 'Grade 6 to 8 - English - 10 Months - 1100 Rs / per month', label: 'Grade 6 to 8 - English - 10 Months - 1100 Rs / per month' },
+                      { value: 'Grade 6 to 8 - Maths - 10 Months - 1100 Rs / per month', label: 'Grade 6 to 8 - Maths - 10 Months - 1100 Rs / per month' },
+                      { value: 'Grade 6 to 8 - Science - 10 Months - 1100 Rs / per month', label: 'Grade 6 to 8 - Science - 10 Months - 1100 Rs / per month' },
+                      { value: 'Grade 6 to 8 - Hindi - 10 Months - 1100 Rs / per month', label: 'Grade 6 to 8 - Hindi - 10 Months - 1100 Rs / per month' },
+                      { value: 'Grade 6 to 8 - Tamil - 10 Months - 1100 Rs / per month', label: 'Grade 6 to 8 - Tamil - 10 Months - 1100 Rs / per month' },
+
+                      // New Courses - Grade 9 & 10
+                      { value: 'Grade 9 & 10 - English - 10 Months - 1500 Rs / per month', label: 'Grade 9 & 10 - English - 10 Months - 1500 Rs / per month' },
+                      { value: 'Grade 9 & 10 - Maths - 10 Months - 1500 Rs / per month', label: 'Grade 9 & 10 - Maths - 10 Months - 1500 Rs / per month' },
+                      { value: 'Grade 9 & 10 - Science - 10 Months - 1500 Rs / per month', label: 'Grade 9 & 10 - Science - 10 Months - 1500 Rs / per month' },
+                      { value: 'Grade 9 & 10 - Hindi - 10 Months - 1500 Rs / per month', label: 'Grade 9 & 10 - Hindi - 10 Months - 1500 Rs / per month' },
+                      { value: 'Grade 9 & 10 - Tamil - 10 Months - 1500 Rs / per month', label: 'Grade 9 & 10 - Tamil - 10 Months - 1500 Rs / per month' },
+
+                      // New Courses - Grade 11 & 12
+                      { value: 'Grade 11 & 12 - Maths - 10 Months - 2000 Rs / per month', label: 'Grade 11 & 12 - Maths - 10 Months - 2000 Rs / per month' },
+                      { value: 'Grade 11 & 12 - Physics - 10 Months - 2000 Rs / per month', label: 'Grade 11 & 12 - Physics - 10 Months - 2000 Rs / per month' },
+                      { value: 'Grade 11 & 12 - Chemistry - 10 Months - 2000 Rs / per month', label: 'Grade 11 & 12 - Chemistry - 10 Months - 2000 Rs / per month' },
+                      { value: 'Grade 11 & 12 - Biology - 10 Months - 2000 Rs / per month', label: 'Grade 11 & 12 - Biology - 10 Months - 2000 Rs / per month' },
+                      { value: 'Grade 11 & 12 - Computer Science - 10 Months - 2000 Rs / per month', label: 'Grade 11 & 12 - Computer Science - 10 Months - 2000 Rs / per month' },
+                      { value: 'Grade 11 & 12 - Accountancy - 10 Months - 2000 Rs / per month', label: 'Grade 11 & 12 - Accountancy - 10 Months - 2000 Rs / per month' },
+                      { value: 'Grade 11 & 12 - Commerce - 10 Months - 2000 Rs / per month', label: 'Grade 11 & 12 - Commerce - 10 Months - 2000 Rs / per month' },
+                    ]}
                 />
               </div>
               </div>
