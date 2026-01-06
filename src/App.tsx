@@ -254,21 +254,21 @@ export default function App() {
     switch (formData.course) {
       // Existing Courses
       case "Moral Ethics - 48 Days - 4999 Rs":
-        calculatedAmount = 4999;
+        calculatedAmount = 1;
         break;
       case "NEET/JEE FOUNDATION (Grade 6) - 10 Months - 1499 Rs / per month":
       case "NEET/JEE FOUNDATION (Grade 7) - 10 Months - 1499 Rs / per month":
       case "NEET/JEE FOUNDATION (Grade 8) - 10 Months - 1499 Rs / per month":
       case "NEET/JEE FOUNDATION (Grade 9) - 10 Months - 1499 Rs / per month":
       case "NEET/JEE FOUNDATION (Grade 10) - 10 Months - 1499 Rs / per month":
-        calculatedAmount = 1499;
+        calculatedAmount = 1;
         break;
       case "NEET/JEE 10 Months (Grade 11) - 1999 Rs / per month":
       case "NEET/JEE 10 Months (Grade 12) - 1999 Rs / per month":
-        calculatedAmount = 1999;
+        calculatedAmount = 1;
         break;
       case "NEET/JEE - Crash Course(For 12 Completed Students) - 50 Days - 9999 Rs":
-        calculatedAmount = 9999;
+        calculatedAmount = 1;
         break;
 
       // New Courses - Grade 3 (Note the " / per month" at the end)
@@ -277,7 +277,7 @@ export default function App() {
       case "Grade 3 - Science - 10 Months - 750 Rs / per month":
       case "Grade 3 - Hindi - 10 Months - 750 Rs / per month":
       case "Grade 3 - Tamil - 10 Months - 750 Rs / per month":
-        calculatedAmount = 750;
+        calculatedAmount = 1;
         break;
 
       // Grade 4 & 5
@@ -286,7 +286,7 @@ export default function App() {
       case "Grade 4 & 5 - Science - 10 Months - 900 Rs / per month":
       case "Grade 4 & 5 - Hindi - 10 Months - 900 Rs / per month":
       case "Grade 4 & 5 - Tamil - 10 Months - 900 Rs / per month":
-        calculatedAmount = 900;
+        calculatedAmount = 1;
         break;
 
       // Grade 6 to 8
@@ -295,7 +295,7 @@ export default function App() {
       case "Grade 6 to 8 - Science - 10 Months - 1100 Rs / per month":
       case "Grade 6 to 8 - Hindi - 10 Months - 1100 Rs / per month":
       case "Grade 6 to 8 - Tamil - 10 Months - 1100 Rs / per month":
-        calculatedAmount = 1100;
+        calculatedAmount = 1;
         break;
 
       // Grade 9 & 10
@@ -304,7 +304,7 @@ export default function App() {
       case "Grade 9 & 10 - Science - 10 Months - 1500 Rs / per month":
       case "Grade 9 & 10 - Hindi - 10 Months - 1500 Rs / per month":
       case "Grade 9 & 10 - Tamil - 10 Months - 1500 Rs / per month":
-        calculatedAmount = 1500;
+        calculatedAmount = 1;
         break;
 
       // Grade 11 & 12
@@ -315,7 +315,7 @@ export default function App() {
       case "Grade 11 & 12 - Computer Science - 10 Months - 2000 Rs / per month":
       case "Grade 11 & 12 - Accountancy - 10 Months - 2000 Rs / per month":
       case "Grade 11 & 12 - Commerce - 10 Months - 2000 Rs / per month":
-        calculatedAmount = 2000;
+        calculatedAmount = 1;
         break;
 
       default:
